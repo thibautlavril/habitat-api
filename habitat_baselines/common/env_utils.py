@@ -29,6 +29,11 @@ def make_env_fn(
     dataset = make_dataset(
         config.TASK_CONFIG.DATASET.TYPE, config=config.TASK_CONFIG.DATASET
     )
+    print("Scene ids:", dataset.scene_ids)
+    print("Dataset episodes:", dataset.num_episodes)
+    for _ in range(100):
+        print("WARNING ONLY ONE EPISODE")
+    dataset.episodes = dataset.episodes[:1]
     env = env_class(config=config, dataset=dataset)
     env.seed(rank)
     return env
