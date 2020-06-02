@@ -486,6 +486,53 @@ class ProximitySensor(Sensor):
         )
 
 
+@registry.register_sensor(name="GPSSensor")
+class EpisodicExploration(Sensor):
+    r"""
+    """
+    cls_uuid: str = "episodic_exploration"
+
+    def __init__(
+        self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
+    ):
+        self._sim = sim
+        super().__init__(config=config)
+        self._discretization = getattr(config, "DISCRETIZATION", 1.0)
+
+        self._current_episode_visited_cells = set([])
+        self._current_episode_id = None
+
+    def _get_uuid(self, *args: Any, **kwargs: Any) -> str:
+        return self.cls_uuid
+
+    def _get_sensor_type(self, *args: Any, **kwargs: Any):
+        # Don't know what to put here
+        raise NotImplementedError
+
+    def _get_observation_space(self, *args: Any, **kwargs: Any):
+        return spaces.Box(low=0, high=1, shape=(1,), dtype=np.float32)
+
+    def get_observation(
+        self, observations, episode, *args: Any, **kwargs: Any
+    ):
+        episode_uniq_id = f"{episode.scene_id} {episode.episode_id}"
+        if episode_uniq_id != self._current_episode_id:
+            self._current_episode_visited_cells = set([])
+            self._current_episode_id = episode_uniq_id
+
+        agent_state = self._sim.get_agent_state()
+
+        agent_position = agent_state.position
+
+        current_cell = (int(d / self._discretization) for d in agent_position)
+
+        is_new = current_cell in self._current_episode_visited_cells
+
+        self._current_episode_visited_cells.add(current_cell)
+
+        return np.array([float(is_new)], dtype=np.float32)
+
+
 @registry.register_measure
 class Success(Measure):
     r"""Whether or not the agent succeeded at its task
