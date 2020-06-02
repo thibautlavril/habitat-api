@@ -106,6 +106,12 @@ _C.TASK.OBJECTGOAL_SENSOR.GOAL_SPEC_MAX_VAL = 50
 _C.TASK.IMAGEGOAL_SENSOR = CN()
 _C.TASK.IMAGEGOAL_SENSOR.TYPE = "ImageGoalSensor"
 # -----------------------------------------------------------------------------
+# EPISODIC_EXPLORATION SENSOR
+# -----------------------------------------------------------------------------
+_C.TASK.EPISODIC_EXPLORATION_SENSOR = CN()
+_C.TASK.EPISODIC_EXPLORATION_SENSOR.TYPE = "EpisodicExplorationSensor"
+_C.TASK.EPISODIC_EXPLORATION_SENSOR.DISCRETIZATION = 1.0
+# -----------------------------------------------------------------------------
 # HEADING SENSOR
 # -----------------------------------------------------------------------------
 _C.TASK.HEADING_SENSOR = CN()
