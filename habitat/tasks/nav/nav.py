@@ -486,7 +486,7 @@ class ProximitySensor(Sensor):
         )
 
 
-@registry.register_sensor(name="GPSSensor")
+@registry.register_sensor(name="EpisodicExplorationSensor")
 class EpisodicExploration(Sensor):
     r"""
     """
