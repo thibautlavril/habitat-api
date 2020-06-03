@@ -486,11 +486,11 @@ class ProximitySensor(Sensor):
         )
 
 
-@registry.register_sensor(name="EpisodicExplorationSensor")
-class EpisodicExploration(Sensor):
+@registry.register_measure(name="CoverageMeasure")
+class Coverage(Measure):
     r"""
     """
-    cls_uuid: str = "episodic_exploration"
+    cls_uuid: str = "coverage"
 
     def __init__(
         self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
@@ -502,35 +502,26 @@ class EpisodicExploration(Sensor):
         self._current_episode_visited_cells = set([])
         self._current_episode_id = None
 
+        self._metric = 0
+
     def _get_uuid(self, *args: Any, **kwargs: Any) -> str:
         return self.cls_uuid
 
-    def _get_sensor_type(self, *args: Any, **kwargs: Any):
-        # Don't know what to put here
-        raise NotImplementedError
+    def reset_metric(self, episode, *args: Any, **kwargs: Any):
+        self._current_episode_visited_cells = set([])
+        return self.update_metric(episode=episode, *args, **kwargs)
 
-    def _get_observation_space(self, *args: Any, **kwargs: Any):
-        return spaces.Box(low=0, high=1, shape=(1,), dtype=np.float32)
-
-    def get_observation(
-        self, observations, episode, *args: Any, **kwargs: Any
-    ):
-        episode_uniq_id = f"{episode.scene_id} {episode.episode_id}"
-        if episode_uniq_id != self._current_episode_id:
-            self._current_episode_visited_cells = set([])
-            self._current_episode_id = episode_uniq_id
-
+    def update_metric(self, episode: Episode, *args: Any, **kwargs: Any):
         agent_state = self._sim.get_agent_state()
 
         agent_position = agent_state.position
 
-        current_cell = (int(d / self._discretization) for d in agent_position)
-
-        is_new = current_cell in self._current_episode_visited_cells
+        current_cell = tuple(
+            [int(d / self._discretization) for d in agent_position]
+        )
 
         self._current_episode_visited_cells.add(current_cell)
-
-        return np.array([float(is_new)], dtype=np.float32)
+        self._metric = len(self._current_episode_visited_cells)
 
 
 @registry.register_measure

@@ -106,12 +106,6 @@ _C.TASK.OBJECTGOAL_SENSOR.GOAL_SPEC_MAX_VAL = 50
 _C.TASK.IMAGEGOAL_SENSOR = CN()
 _C.TASK.IMAGEGOAL_SENSOR.TYPE = "ImageGoalSensor"
 # -----------------------------------------------------------------------------
-# EPISODIC_EXPLORATION SENSOR
-# -----------------------------------------------------------------------------
-_C.TASK.EPISODIC_EXPLORATION_SENSOR = CN()
-_C.TASK.EPISODIC_EXPLORATION_SENSOR.TYPE = "EpisodicExplorationSensor"
-_C.TASK.EPISODIC_EXPLORATION_SENSOR.DISCRETIZATION = 1.0
-# -----------------------------------------------------------------------------
 # HEADING SENSOR
 # -----------------------------------------------------------------------------
 _C.TASK.HEADING_SENSOR = CN()
@@ -174,6 +168,12 @@ _C.TASK.TOP_DOWN_MAP.DRAW_GOAL_AABBS = True
 # -----------------------------------------------------------------------------
 _C.TASK.COLLISIONS = CN()
 _C.TASK.COLLISIONS.TYPE = "Collisions"
+# -----------------------------------------------------------------------------
+# COVERAGE MEASUREMENT
+# -----------------------------------------------------------------------------
+_C.TASK.COVERAGE = CN()
+_C.TASK.COVERAGE.TYPE = "CoverageMeasure"
+_C.TASK.COVERAGE.DISCRETIZATION = 1.0
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 # # EQA TASK
