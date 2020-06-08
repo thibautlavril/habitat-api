@@ -175,6 +175,12 @@ _C.TASK.COVERAGE = CN()
 _C.TASK.COVERAGE.TYPE = "CoverageMeasure"
 _C.TASK.COVERAGE.DISCRETIZATION = 1.0
 # -----------------------------------------------------------------------------
+# MIX DISTANCE TO GOAL - COVERAGE MEASUREMENT
+# -----------------------------------------------------------------------------
+_C.TASK.MIX_DIST_COVERAGE = CN()
+_C.TASK.MIX_DIST_COVERAGE.TYPE = "MixDistanceToGoalAndCoverageMeasure"
+_C.TASK.MIX_DIST_COVERAGE.COVERAGE_COEF = -0.1
+# -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 # # EQA TASK
 # -----------------------------------------------------------------------------

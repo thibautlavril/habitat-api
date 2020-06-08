@@ -524,6 +524,50 @@ class Coverage(Measure):
         self._metric = len(self._current_episode_visited_cells)
 
 
+@registry.register_measure(name="MixDistanceToGoalAndCoverageMeasure")
+class MixDistanceToGoalAndCoverage(Measure):
+    r"""Whether or not the agent succeeded at its task
+
+    This measure depends on DistanceToGoal and Coverage measure.
+    """
+
+    cls_uuid: str = "mix_distance_to_goal_and_coverage"
+
+    def __init__(
+        self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
+    ):
+        self._sim = sim
+        self._config = config
+        self._coverage_coef = getattr(config, "COVERAGE_COEF", -0.1)
+        if self._coverage_coef > 0:
+            raise ValueError(
+                "Expect negative value for COVERAGE_COEF for "
+                "MixDistanceToGoalAndCoverage"
+            )
+
+        super().__init__()
+
+    def _get_uuid(self, *args: Any, **kwargs: Any) -> str:
+        return self.cls_uuid
+
+    def reset_metric(self, episode, task, *args: Any, **kwargs: Any):
+        task.measurements.check_measure_dependencies(
+            self.uuid, [DistanceToGoal.cls_uuid, Coverage.cls_uuid]
+        )
+        self.update_metric(episode=episode, task=task, *args, **kwargs)
+
+    def update_metric(
+        self, episode, task: EmbodiedTask, *args: Any, **kwargs: Any
+    ):
+        distance_to_target = task.measurements.measures[
+            DistanceToGoal.cls_uuid
+        ].get_metric()
+
+        coverage = task.measurements.measures[Coverage.cls_uuid].get_metric()
+
+        self._metric = distance_to_target + self._coverage_coef * coverage
+
+
 @registry.register_measure
 class Success(Measure):
     r"""Whether or not the agent succeeded at its task
