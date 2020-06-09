@@ -181,6 +181,10 @@ _C.TASK.MIX_DIST_COVERAGE = CN()
 _C.TASK.MIX_DIST_COVERAGE.TYPE = "MixDistanceToGoalAndCoverageMeasure"
 _C.TASK.MIX_DIST_COVERAGE.COVERAGE_COEF = -0.1
 # -----------------------------------------------------------------------------
+# EPISODE LENGTH MEASUREMENT
+# -----------------------------------------------------------------------------
+_C.TASK.EPISODE_LENGTH = CN()
+_C.TASK.EPISODE_LENGTH.TYPE = "EpisodeLengthMeasure"
 # -----------------------------------------------------------------------------
 # # EQA TASK
 # -----------------------------------------------------------------------------

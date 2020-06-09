@@ -524,6 +524,31 @@ class Coverage(Measure):
         self._metric = len(self._current_episode_visited_cells)
 
 
+@registry.register_measure(name="EpisodeLengthMeasure")
+class EpisodeLength(Measure):
+    r"""
+    """
+    cls_uuid: str = "episode_length"
+
+    def __init__(
+        self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
+    ):
+        self._sim = sim
+        super().__init__(config=config)
+
+        self._metric = 0
+
+    def _get_uuid(self, *args: Any, **kwargs: Any) -> str:
+        return self.cls_uuid
+
+    def reset_metric(self, episode, *args: Any, **kwargs: Any):
+        self._metric = 0
+        return self.update_metric(episode=episode, *args, **kwargs)
+
+    def update_metric(self, episode: Episode, *args: Any, **kwargs: Any):
+        self._metric += 1
+
+
 @registry.register_measure(name="MixDistanceToGoalAndCoverageMeasure")
 class MixDistanceToGoalAndCoverage(Measure):
     r"""Whether or not the agent succeeded at its task
