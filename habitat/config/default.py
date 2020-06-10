@@ -181,6 +181,11 @@ _C.TASK.MIX_DIST_COVERAGE = CN()
 _C.TASK.MIX_DIST_COVERAGE.TYPE = "MixDistanceToGoalAndCoverageMeasure"
 _C.TASK.MIX_DIST_COVERAGE.COVERAGE_COEF = -0.1
 # -----------------------------------------------------------------------------
+# MIn DISTANCE TO GOAL
+# -----------------------------------------------------------------------------
+_C.TASK.MIN_DIST_TO_GOAL = CN()
+_C.TASK.MIN_DIST_TO_GOAL.TYPE = "MinDistanceToGoalMeasure"
+# -----------------------------------------------------------------------------
 # EPISODE LENGTH MEASUREMENT
 # -----------------------------------------------------------------------------
 _C.TASK.EPISODE_LENGTH = CN()

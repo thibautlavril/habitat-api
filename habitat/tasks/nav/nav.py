@@ -636,6 +636,44 @@ class Success(Measure):
             self._metric = 0.0
 
 
+@registry.register_measure(name="MinDistanceToGoalMeasure")
+class MinDistanceToGoal(Measure):
+    r"""
+    Min dist to goal reach during episode
+    """
+
+    cls_uuid: str = "min_distance_to_goal"
+
+    def __init__(
+        self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
+    ):
+        self._sim = sim
+        self._config = config
+        super().__init__()
+
+    def _get_uuid(self, *args: Any, **kwargs: Any) -> str:
+        return self.cls_uuid
+
+    def reset_metric(self, episode, task, *args: Any, **kwargs: Any):
+        task.measurements.check_measure_dependencies(
+            self.uuid, [DistanceToGoal.cls_uuid]
+        )
+        self._metric = None
+        self.update_metric(episode=episode, task=task, *args, **kwargs)
+
+    def update_metric(
+        self, episode, task: EmbodiedTask, *args: Any, **kwargs: Any
+    ):
+        distance_to_target = task.measurements.measures[
+            DistanceToGoal.cls_uuid
+        ].get_metric()
+
+        if self._metric is None:
+            self._metric = distance_to_target
+
+        self._metric = min(distance_to_target, self._metric)
+
+
 @registry.register_measure
 class SPL(Measure):
     r"""SPL (Success weighted by Path Length)
