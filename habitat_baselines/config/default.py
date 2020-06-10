@@ -52,7 +52,6 @@ _C.RL = CN()
 _C.RL.REWARD_MEASURE = "distance_to_goal"
 _C.RL.SUCCESS_MEASURE = "spl"
 _C.RL.SUCCESS_REWARD = 10.0
-_C.RL.REWARD_COEF = 1.0
 _C.RL.SLACK_REWARD = -0.01
 # -----------------------------------------------------------------------------
 # PROXIMAL POLICY OPTIMIZATION (PPO)

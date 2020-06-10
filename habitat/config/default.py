@@ -180,6 +180,7 @@ _C.TASK.COVERAGE.DISCRETIZATION = 1.0
 _C.TASK.MIX_DIST_COVERAGE = CN()
 _C.TASK.MIX_DIST_COVERAGE.TYPE = "MixDistanceToGoalAndCoverageMeasure"
 _C.TASK.MIX_DIST_COVERAGE.COVERAGE_COEF = -0.1
+_C.TASK.MIX_DIST_COVERAGE.DIST_COEF = 1.0
 # -----------------------------------------------------------------------------
 # MIn DISTANCE TO GOAL
 # -----------------------------------------------------------------------------

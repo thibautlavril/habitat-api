@@ -563,10 +563,16 @@ class MixDistanceToGoalAndCoverage(Measure):
     ):
         self._sim = sim
         self._config = config
-        self._coverage_coef = getattr(config, "COVERAGE_COEF", -0.1)
+        self._dist_coef = getattr(config, "DIST_COEF")
+        self._coverage_coef = getattr(config, "COVERAGE_COEF")
         if self._coverage_coef > 0:
             raise ValueError(
                 "Expect negative value for COVERAGE_COEF for "
+                "MixDistanceToGoalAndCoverage"
+            )
+        if self._dist_coef < 0:
+            raise ValueError(
+                "Expect positive value for DIST_COEF for "
                 "MixDistanceToGoalAndCoverage"
             )
 
@@ -590,7 +596,10 @@ class MixDistanceToGoalAndCoverage(Measure):
 
         coverage = task.measurements.measures[Coverage.cls_uuid].get_metric()
 
-        self._metric = distance_to_target + self._coverage_coef * coverage
+        self._metric = (
+            self._dist_coef * distance_to_target
+            + self._coverage_coef * coverage
+        )
 
 
 @registry.register_measure
