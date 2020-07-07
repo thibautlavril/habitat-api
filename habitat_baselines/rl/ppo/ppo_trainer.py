@@ -28,6 +28,7 @@ from habitat_baselines.common.utils import (
     linear_decay,
 )
 from habitat_baselines.rl.ppo import PPO, PointNavBaselinePolicy
+from habitat_baselines.rl.ppo.policy import ImageNavBaselinePolicy
 
 
 @baseline_registry.register_trainer(name="ppo")
@@ -59,11 +60,20 @@ class PPOTrainer(BaseRLTrainer):
         """
         logger.add_filehandler(self.config.LOG_FILE)
 
-        self.actor_critic = PointNavBaselinePolicy(
-            observation_space=self.envs.observation_spaces[0],
-            action_space=self.envs.action_spaces[0],
-            hidden_size=ppo_cfg.hidden_size,
-        )
+        print("ppo_config", ppo_cfg)
+        if "IMAGEGOAL_SENSOR" in self.config.TASK_CONFIG.TASK.SENSORS:
+            self.actor_critic = ImageNavBaselinePolicy(
+                observation_space=self.envs.observation_spaces[0],
+                action_space=self.envs.action_spaces[0],
+                hidden_size=ppo_cfg.hidden_size,
+                goal_sensor_uuid=self.config.TASK_CONFIG.TASK.GOAL_SENSOR_UUID,
+            )
+        else:
+            self.actor_critic = PointNavBaselinePolicy(
+                observation_space=self.envs.observation_spaces[0],
+                action_space=self.envs.action_spaces[0],
+                hidden_size=ppo_cfg.hidden_size,
+            )
         self.actor_critic.to(self.device)
 
         self.agent = PPO(
@@ -643,5 +653,9 @@ class PPOTrainer(BaseRLTrainer):
         metrics = {k: v for k, v in aggregated_stats.items() if k != "reward"}
         if len(metrics) > 0:
             writer.add_scalars("eval_metrics", metrics, step_id)
+
+        train_dir = os.path.dirname(self.config.LOG_FILE)
+        stats_path = os.path.join(train_dir, "stats.pth")
+        torch.save(stats_episodes, stats_path)
 
         self.envs.close()
