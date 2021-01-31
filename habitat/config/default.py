@@ -169,6 +169,28 @@ _C.TASK.TOP_DOWN_MAP.DRAW_GOAL_AABBS = True
 _C.TASK.COLLISIONS = CN()
 _C.TASK.COLLISIONS.TYPE = "Collisions"
 # -----------------------------------------------------------------------------
+# COVERAGE MEASUREMENT
+# -----------------------------------------------------------------------------
+_C.TASK.COVERAGE = CN()
+_C.TASK.COVERAGE.TYPE = "CoverageMeasure"
+_C.TASK.COVERAGE.DISCRETIZATION = 1.0
+# -----------------------------------------------------------------------------
+# MIX DISTANCE TO GOAL - COVERAGE MEASUREMENT
+# -----------------------------------------------------------------------------
+_C.TASK.MIX_DIST_COVERAGE = CN()
+_C.TASK.MIX_DIST_COVERAGE.TYPE = "MixDistanceToGoalAndCoverageMeasure"
+_C.TASK.MIX_DIST_COVERAGE.COVERAGE_COEF = -0.1
+_C.TASK.MIX_DIST_COVERAGE.DIST_COEF = 1.0
+# -----------------------------------------------------------------------------
+# MIn DISTANCE TO GOAL
+# -----------------------------------------------------------------------------
+_C.TASK.MIN_DIST_TO_GOAL = CN()
+_C.TASK.MIN_DIST_TO_GOAL.TYPE = "MinDistanceToGoalMeasure"
+# -----------------------------------------------------------------------------
+# EPISODE LENGTH MEASUREMENT
+# -----------------------------------------------------------------------------
+_C.TASK.EPISODE_LENGTH = CN()
+_C.TASK.EPISODE_LENGTH.TYPE = "EpisodeLengthMeasure"
 # -----------------------------------------------------------------------------
 # # EQA TASK
 # -----------------------------------------------------------------------------

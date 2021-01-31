@@ -65,6 +65,7 @@ class NavRLEnv(habitat.RLEnv):
         current_measure = self._env.get_metrics()[self._reward_measure_name]
 
         reward += self._previous_measure - current_measure
+
         self._previous_measure = current_measure
 
         if self._episode_success():

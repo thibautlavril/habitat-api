@@ -486,6 +486,122 @@ class ProximitySensor(Sensor):
         )
 
 
+@registry.register_measure(name="CoverageMeasure")
+class Coverage(Measure):
+    r"""
+    """
+    cls_uuid: str = "coverage"
+
+    def __init__(
+        self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
+    ):
+        self._sim = sim
+        super().__init__(config=config)
+        self._discretization = getattr(config, "DISCRETIZATION", 1.0)
+
+        self._current_episode_visited_cells = set([])
+        self._current_episode_id = None
+
+        self._metric = 0
+
+    def _get_uuid(self, *args: Any, **kwargs: Any) -> str:
+        return self.cls_uuid
+
+    def reset_metric(self, episode, *args: Any, **kwargs: Any):
+        self._current_episode_visited_cells = set([])
+        return self.update_metric(episode=episode, *args, **kwargs)
+
+    def update_metric(self, episode: Episode, *args: Any, **kwargs: Any):
+        agent_state = self._sim.get_agent_state()
+
+        agent_position = agent_state.position
+
+        current_cell = tuple(
+            [int(d / self._discretization) for d in agent_position]
+        )
+
+        self._current_episode_visited_cells.add(current_cell)
+        self._metric = len(self._current_episode_visited_cells)
+
+
+@registry.register_measure(name="EpisodeLengthMeasure")
+class EpisodeLength(Measure):
+    r"""
+    """
+    cls_uuid: str = "episode_length"
+
+    def __init__(
+        self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
+    ):
+        self._sim = sim
+        super().__init__(config=config)
+
+        self._metric = 0
+
+    def _get_uuid(self, *args: Any, **kwargs: Any) -> str:
+        return self.cls_uuid
+
+    def reset_metric(self, episode, *args: Any, **kwargs: Any):
+        self._metric = 0
+        return self.update_metric(episode=episode, *args, **kwargs)
+
+    def update_metric(self, episode: Episode, *args: Any, **kwargs: Any):
+        self._metric += 1
+
+
+@registry.register_measure(name="MixDistanceToGoalAndCoverageMeasure")
+class MixDistanceToGoalAndCoverage(Measure):
+    r"""Whether or not the agent succeeded at its task
+
+    This measure depends on DistanceToGoal and Coverage measure.
+    """
+
+    cls_uuid: str = "mix_distance_to_goal_and_coverage"
+
+    def __init__(
+        self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
+    ):
+        self._sim = sim
+        self._config = config
+        self._dist_coef = getattr(config, "DIST_COEF")
+        self._coverage_coef = getattr(config, "COVERAGE_COEF")
+        if self._coverage_coef > 0:
+            raise ValueError(
+                "Expect negative value for COVERAGE_COEF for "
+                "MixDistanceToGoalAndCoverage"
+            )
+        if self._dist_coef < 0:
+            raise ValueError(
+                "Expect positive value for DIST_COEF for "
+                "MixDistanceToGoalAndCoverage"
+            )
+
+        super().__init__()
+
+    def _get_uuid(self, *args: Any, **kwargs: Any) -> str:
+        return self.cls_uuid
+
+    def reset_metric(self, episode, task, *args: Any, **kwargs: Any):
+        task.measurements.check_measure_dependencies(
+            self.uuid, [DistanceToGoal.cls_uuid, Coverage.cls_uuid]
+        )
+        self.update_metric(episode=episode, task=task, *args, **kwargs)
+
+    def update_metric(
+        self, episode, task: EmbodiedTask, *args: Any, **kwargs: Any
+    ):
+        distance_to_target = task.measurements.measures[
+            DistanceToGoal.cls_uuid
+        ].get_metric()
+
+        coverage = task.measurements.measures[Coverage.cls_uuid].get_metric()
+
+        self._metric = (
+            self._dist_coef * distance_to_target
+            + self._coverage_coef * coverage
+        )
+
+
 @registry.register_measure
 class Success(Measure):
     r"""Whether or not the agent succeeded at its task
@@ -527,6 +643,44 @@ class Success(Measure):
             self._metric = 1.0
         else:
             self._metric = 0.0
+
+
+@registry.register_measure(name="MinDistanceToGoalMeasure")
+class MinDistanceToGoal(Measure):
+    r"""
+    Min dist to goal reach during episode
+    """
+
+    cls_uuid: str = "min_distance_to_goal"
+
+    def __init__(
+        self, sim: Simulator, config: Config, *args: Any, **kwargs: Any
+    ):
+        self._sim = sim
+        self._config = config
+        super().__init__()
+
+    def _get_uuid(self, *args: Any, **kwargs: Any) -> str:
+        return self.cls_uuid
+
+    def reset_metric(self, episode, task, *args: Any, **kwargs: Any):
+        task.measurements.check_measure_dependencies(
+            self.uuid, [DistanceToGoal.cls_uuid]
+        )
+        self._metric = None
+        self.update_metric(episode=episode, task=task, *args, **kwargs)
+
+    def update_metric(
+        self, episode, task: EmbodiedTask, *args: Any, **kwargs: Any
+    ):
+        distance_to_target = task.measurements.measures[
+            DistanceToGoal.cls_uuid
+        ].get_metric()
+
+        if self._metric is None:
+            self._metric = distance_to_target
+
+        self._metric = min(distance_to_target, self._metric)
 
 
 @registry.register_measure
